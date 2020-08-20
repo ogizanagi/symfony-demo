@@ -12,12 +12,14 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Post;
+use App\Form\ListPostActionsType;
 use App\Form\PostType;
 use App\Repository\PostRepository;
 use App\Security\PostVoter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -50,14 +52,37 @@ class BlogController extends AbstractController
      *     could move this annotation to any other controller while maintaining
      *     the route name and therefore, without breaking any existing link.
      *
-     * @Route("/", methods="GET", name="admin_index")
-     * @Route("/", methods="GET", name="admin_post_index")
+     * @Route("/", methods={"GET", "POST"}, name="admin_index")
+     * @Route("/", methods={"GET", "POST"}, name="admin_post_index")
      */
-    public function index(PostRepository $posts): Response
+    public function index(Request $request, PostRepository $posts): Response
     {
         $authorPosts = $posts->findBy(['author' => $this->getUser()], ['publishedAt' => 'DESC']);
 
-        return $this->render('admin/blog/index.html.twig', ['posts' => $authorPosts]);
+        /** @var Form $form */
+        $form = $this->createForm(ListPostActionsType::class, [], ['posts' => $authorPosts]);
+
+        if ($form->handleRequest($request)->isSubmitted() && $form->isValid()) {
+            dump([
+                'entities' => $form->get('selectedPosts')->getData(),
+                'action' => $form->getClickedButton()->getName(),
+            ]);
+
+            switch ($form->getClickedButton()->getName()) {
+                case 'disable':
+                    // do something
+                    break;
+                case 'remove':
+                    // do something else
+                    break;
+                default:
+                    throw new \LogicException('not supported');
+            }
+
+            return $this->redirectToRoute('admin_index');
+        }
+
+        return $this->render('admin/blog/index.html.twig', ['posts' => $authorPosts, 'form' => $form->createView()]);
     }
 
     /**
