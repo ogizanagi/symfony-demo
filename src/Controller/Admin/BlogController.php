@@ -60,7 +60,7 @@ class BlogController extends AbstractController
         $authorPosts = $posts->findBy(['author' => $this->getUser()], ['publishedAt' => 'DESC']);
 
         /** @var Form $form */
-        $form = $this->createForm(ListPostActionsType::class, [], ['posts' => $authorPosts]);
+        $form = $this->createForm(ListPostActionsType::class);
 
         if ($form->handleRequest($request)->isSubmitted() && $form->isValid()) {
             dump([

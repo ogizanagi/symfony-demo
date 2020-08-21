@@ -10,7 +10,7 @@
         "symfony/polyfill-php72": "*"
     },
     "require": {
-        "php": "^7.2.9",
+        "php": "^7.4",
         "ext-pdo_sqlite": "*",
         "composer/package-versions-deprecated": "^1.8",
         "doctrine/doctrine-bundle": "^1.12|^2.0",
