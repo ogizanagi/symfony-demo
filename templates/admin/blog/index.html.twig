@@ -21,11 +21,14 @@
             </tr>
         </thead>
         <tbody>
+        {% set prototype = form.selectedPosts.vars.prototype %}
+        {% do form.selectedPosts.setRendered %}
         {% for post in posts %}
             <tr>
                 <td>
-                    {% set entryCheckbox = form.selectedPosts[loop.index0] %}
-                    <input type="checkbox" name="{{ entryCheckbox.vars.full_name }}" value="{{ entryCheckbox.vars.value }}" />
+                    <input type="checkbox" name="{{ prototype.vars.full_name|replace({
+                        (prototype.vars.name): loop.index0,
+                    }) }}" value="{{ post.id }}" />
                 </td>
                 <td>{{ post.title }}</td>
                 {# it's not mandatory to set the timezone in localizeddate(). This is done to
